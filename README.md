@@ -52,7 +52,7 @@ action expect that location.
 ### 1. Clone and configure
 
 ```sh
-git clone https://github.com/<you>/bambu-panel.git ~/bambu-panel
+git clone https://github.com/Wintaru/bambu-panel.git ~/bambu-panel
 cd ~/bambu-panel
 cp config.example.json config.json
 chmod 600 config.json
