@@ -120,8 +120,13 @@ body.cam-full .cam-chip { display: block; }
 .alert small { display: block; color: #e8a0a0; font-weight: 400; margin-top: 4px; font-family: ui-monospace, monospace; }
 .job-head { display: flex; align-items: flex-start; gap: 16px; }
 .job-thumb {
-  flex: none; width: 96px; height: 96px; object-fit: contain; padding: 6px;
-  background: #d5d9df; border-radius: 12px;
+  flex: none; width: 96px; height: 96px; padding: 6px;
+  background: var(--panel-2); border-radius: 12px;
+}
+.job-thumb img {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+  /* faint rim so dark filament colors still read against the dark tile */
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, .45)) drop-shadow(0 0 6px rgba(255, 255, 255, .12));
 }
 .job-title {
   flex: 1; font-size: 20px; font-weight: 700; line-height: 1.25;

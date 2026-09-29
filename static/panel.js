@@ -144,7 +144,7 @@ function render(msg) {
     thumbKey = msg.thumb;
     loadThumb(`/api/thumb?k=${encodeURIComponent(thumbKey)}`);
   }
-  $('jobThumb').hidden = !showThumb;
+  $('jobThumbBox').hidden = !showThumb;
   $('barFill').style.width = `${active || gs === 'FINISH' ? pct || 0 : 0}%`;
   $('barFill').style.background = gs === 'PAUSE' ? 'var(--warn)' : gs === 'FAILED' ? 'var(--err)' : '';
   $('layer').textContent = S.total_layer_num ? `${S.layer_num || 0} / ${S.total_layer_num}` : '—';
