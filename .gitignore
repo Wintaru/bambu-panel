@@ -1,0 +1,8 @@
+# Private: printer IP, serial, LAN access code
+config.json
+go2rtc.yaml
+
+# Downloaded / generated
+bin/
+firefox-profile/
+__pycache__/

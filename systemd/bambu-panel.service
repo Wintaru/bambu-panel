@@ -1,0 +1,12 @@
+[Unit]
+Description=Bambu printer panel backend (MQTT bridge + go2rtc camera relay)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=%h/.local/share/bambu-venv/bin/python3 %h/bambu-panel/server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

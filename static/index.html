@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Printer Panel</title>
+<link rel="stylesheet" href="/static/panel.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="tb-left">
+    <span class="conn-dot" id="connDot"></span>
+    <span class="printer-name" id="printerName">X1 Carbon</span>
+    <span class="state-pill" id="statePill">—</span>
+  </div>
+  <div class="tb-center" id="stageText"></div>
+  <div class="tb-right">
+    <span class="wifi" id="wifi"></span>
+    <span class="clock" id="clock">--:--</span>
+    <button class="tb-btn" id="btnTablet" aria-label="Tablet controls">
+      <svg viewBox="0 0 24 24"><path d="M12 3v8M6.3 6.3a8 8 0 1 0 11.4 0"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="cam-panel" id="camPanel">
+      <printer-cam id="cam"></printer-cam>
+      <div class="cam-msg" id="camMsg">Connecting to camera…</div>
+      <div class="cam-badge"><span class="live-dot"></span>LIVE</div>
+      <div class="cam-chip" id="camChip"></div>
+      <div class="cam-hint" id="camHint">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </div>
+    </section>
+
+  <aside class="side">
+    <div class="alert" id="alert" hidden></div>
+    <section class="card job">
+      <div class="job-head">
+        <div class="job-title" id="jobTitle">Waiting for printer…</div>
+        <div class="job-pct" id="jobPct"></div>
+      </div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+      <div class="job-stats">
+        <div><span class="lbl">Layer</span><span class="val" id="layer">—</span></div>
+        <div><span class="lbl">Remaining</span><span class="val" id="remain">—</span></div>
+        <div><span class="lbl">Done at</span><span class="val" id="eta">—</span></div>
+      </div>
+    </section>
+    <section class="card ams">
+      <div class="ams-head">
+        <span class="card-title">AMS</span>
+        <span class="ams-env" id="amsEnv"></span>
+      </div>
+      <div class="ams-slots" id="amsSlots"></div>
+    </section>
+  </aside>
+
+  <div class="bottom">
+    <section class="temps">
+        <div class="card temp" id="tNozzle"><span class="lbl">Nozzle</span><span class="t-cur">—</span><span class="t-tar"></span></div>
+        <div class="card temp" id="tBed"><span class="lbl">Bed</span><span class="t-cur">—</span><span class="t-tar"></span></div>
+        <div class="card temp" id="tChamber"><span class="lbl">Chamber</span><span class="t-cur">—</span><span class="t-tar"></span></div>
+      </section>
+    <section class="card misc">
+        <div><span class="lbl">Part fan</span><span class="val" id="fanPart">—</span></div>
+        <div><span class="lbl">Aux fan</span><span class="val" id="fanAux">—</span></div>
+        <div><span class="lbl">Chamber fan</span><span class="val" id="fanCham">—</span></div>
+        <div><span class="lbl">Speed</span><span class="val" id="speedLvl">—</span></div>
+      </section>
+    <div class="ctl-wrap">
+      <div class="lock-note" id="lockNote">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        Controls locked · Developer Mode required
+      </div>
+      <section class="controls" id="controls">
+      <button class="ctl" data-act="pauseResume" id="btnPause">
+        <svg viewBox="0 0 24 24" id="icoPause"><path d="M8 5v14M16 5v14"/></svg>
+        <span id="lblPause">Pause</span>
+      </button>
+      <button class="ctl danger" data-act="stop">
+        <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>
+        <span>Stop</span>
+      </button>
+      <button class="ctl" data-act="light" id="btnLight">
+        <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg>
+        <span>Light</span>
+      </button>
+      <button class="ctl" data-act="speed">
+        <svg viewBox="0 0 24 24"><path d="M12 14l4-6M4.9 18a9 9 0 1 1 14.2 0"/></svg>
+        <span>Speed</span>
+      </button>
+    </section>
+    </div>
+  </div>
+</main>
+
+<div class="offline" id="offline" hidden>
+  <div class="offline-box">
+    <div class="spinner"></div>
+    <div id="offlineText">Connecting to printer…</div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="sheet" hidden>
+  <div class="sheet" id="sheetBody"></div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script type="module" src="/static/panel.js"></script>
+</body>
+</html>

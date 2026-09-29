@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Printer Panel
+Comment=Full-screen Bambu printer panel
+Exec=@PANEL_DIR@/kiosk.sh
+Icon=printer
+X-KDE-autostart-phase=2

@@ -1,0 +1,9 @@
+{
+  "printer_name": "X1 Carbon",
+  "host": "192.168.1.50",
+  "serial": "YOUR_PRINTER_SERIAL",
+  "access_code": "YOUR_LAN_ACCESS_CODE",
+  "controls_enabled": false,
+  "port": 8765,
+  "screen_off_minutes": 10
+}
