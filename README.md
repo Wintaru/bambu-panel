@@ -5,6 +5,8 @@ old Linux tablet/laptop mounted next to the printer. It shows the live camera, j
 temperatures, fans and AMS slots, talking to the printer directly over your LAN. No cloud, no
 Bambu Handy.
 
+![Bambu Panel on a Surface Book mounted on an X1 Carbon, showing the live camera, job progress, AMS slots and temperatures](docs/panel.jpg)
+
 - Live camera with no transcoding (RTSPS → [go2rtc](https://github.com/AlexxIT/go2rtc) → MSE in the browser). Tap it for full screen.
 - Job name, progress, layer, time remaining, finish time, current stage, HMS errors.
 - Nozzle / bed / chamber temps, fan speeds, speed profile, AMS filament colors + humidity.
