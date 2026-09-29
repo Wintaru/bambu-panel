@@ -76,9 +76,37 @@ function setTemp(id, cur, tar) {
   el.classList.toggle('heating', t > 0 && Math.abs(c - t) > 3);
 }
 
+// The plate preview is the whole 256 mm bed with the model small in it: crop to the
+// non-transparent pixels so the model fills the thumbnail.
+function loadThumb(url) {
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, 0);
+    const px = g.getImageData(0, 0, c.width, c.height).data;
+    let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+    for (let y = 0; y < c.height; y++)
+      for (let x = 0; x < c.width; x++)
+        if (px[(y * c.width + x) * 4 + 3] > 16) {
+          if (x < x0) x0 = x; if (x > x1) x1 = x;
+          if (y < y0) y0 = y; if (y > y1) y1 = y;
+        }
+    if (x1 < 0) { $('jobThumb').src = url; return; }
+    const side = Math.max(x1 - x0, y1 - y0) * 1.1 + 8;   // square, with a little margin
+    const out = document.createElement('canvas');
+    out.width = out.height = 256;
+    out.getContext('2d').drawImage(c, (x0 + x1 - side) / 2, (y0 + y1 - side) / 2, side, side, 0, 0, 256, 256);
+    $('jobThumb').src = out.toDataURL();
+  };
+  img.src = url;
+}
+
 // ---------------------------------------------------------------- render
 let S = {};           // latest print state
 let controlsEnabled = false;
+let thumbKey = null;  // which job's preview is loaded
 
 function render(msg) {
   if (busyMessage) return;   // a restart is under way; keep its overlay up
@@ -111,6 +139,12 @@ function render(msg) {
     gs === 'FINISH' ? `Finished: ${name}` :
     gs === 'FAILED' ? `Failed: ${name}` : 'Ready to print';
   $('jobPct').textContent = active || gs === 'FINISH' ? `${pct || 0}%` : '';
+  const showThumb = !!msg.thumb && (active || gs === 'FINISH' || gs === 'FAILED');
+  if (msg.thumb && msg.thumb !== thumbKey) {
+    thumbKey = msg.thumb;
+    loadThumb(`/api/thumb?k=${encodeURIComponent(thumbKey)}`);
+  }
+  $('jobThumb').hidden = !showThumb;
   $('barFill').style.width = `${active || gs === 'FINISH' ? pct || 0 : 0}%`;
   $('barFill').style.background = gs === 'PAUSE' ? 'var(--warn)' : gs === 'FAILED' ? 'var(--err)' : '';
   $('layer').textContent = S.total_layer_num ? `${S.layer_num || 0} / ${S.total_layer_num}` : '—';

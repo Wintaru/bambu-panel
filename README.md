@@ -8,7 +8,8 @@ Bambu Handy.
 ![Bambu Panel on a Surface Book mounted on an X1 Carbon, showing the live camera, job progress, AMS slots and temperatures](docs/panel.jpg)
 
 - Live camera with no transcoding (RTSPS → [go2rtc](https://github.com/AlexxIT/go2rtc) → MSE in the browser). Tap it for full screen.
-- Job name, progress, layer, time remaining, finish time, current stage, HMS errors.
+- Job name, plate preview image, progress, layer, time remaining, finish time, current stage,
+  HMS errors.
 - Nozzle / bed / chamber temps, fan speeds, speed profile, AMS filament colors + humidity.
 - Tablet menu (power icon, top right): reload screen, restart panel service, exit to desktop, reboot.
 - Behaves like an appliance: autologin → kiosk browser, screen turns off when idle, wakes on one
@@ -26,11 +27,14 @@ The kiosk/screen parts (`kiosk.sh`) assume KDE Plasma 6.
 ```
 printer ──MQTT/TLS :8883──▶ server.py ──WebSocket /ws──▶ Firefox (kiosk)
         ──RTSPS    :322 ──▶ go2rtc    ──MSE :1984─────▶   └ static/index.html
+        ──FTPS     :990 ──▶ server.py ──/api/thumb─────▶     (plate preview)
 ```
 
 - `server.py`: aiohttp on `127.0.0.1:8765`. Subscribes to `device/<serial>/report`, merges the
   printer's partial updates into one state object, and pushes it to the page. Starts and
-  supervises go2rtc (which exits when the server does).
+  supervises go2rtc (which exits when the server does). When the job changes, it finds the
+  job's `.3mf` on the printer's SD card over FTPS and reads only the plate preview PNG from it
+  (a few tens of KB, using ranged reads), then serves it at `/api/thumb`.
 - `static/`: the UI (`index.html`, `panel.css`, `panel.js`), plus go2rtc's `video-rtc.js` /
   `video-stream.js` player.
 - `kiosk.sh`: applies screen settings, waits for the server, launches Firefox in kiosk mode.
@@ -237,6 +241,7 @@ Handy and cloud printing from Bambu Studio. If you're fine with that:
 | Symptom | Check |
 | --- | --- |
 | "Connecting to printer…" forever | IP/serial/access code in `config.json`; can you reach port 8883? Logs show the MQTT result code. |
+| No plate preview | The preview comes from the job's `.3mf` on the printer's SD card (`/cache/<job name>.gcode.3mf`). Prints started from the printer's own screen or from a plain `.gcode` file have no preview. Look for `thumbnail` lines in the service log. |
 | No camera | LAN Mode Liveview enabled on the printer? go2rtc errors are in the service log. Only a limited number of clients can pull the stream at once (Bambu Studio counts). |
 | Screen never turns off | Something is holding a screen inhibitor: `qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/PolicyAgent ListInhibitions`. |
 | Touch stops responding after re-running `kiosk.sh` in a live session | Seen once after a live KWin/PowerDevil reconfigure. A reboot fixed it. |
