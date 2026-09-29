@@ -7,6 +7,8 @@ Bambu Handy.
 
 ![Bambu Panel on a Surface Book mounted on an X1 Carbon, showing the live camera, job progress, AMS slots and temperatures](docs/panel.jpg)
 
+![Screenshot of the panel during a print: live camera, job card with plate preview and progress, AMS slots, temperatures and fans](docs/screenshot.jpg)
+
 - Live camera with no transcoding (RTSPS → [go2rtc](https://github.com/AlexxIT/go2rtc) → MSE in the browser). Tap it for full screen.
 - Job name, plate preview image, progress, layer, time remaining, finish time, current stage,
   HMS errors.
