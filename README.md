@@ -14,9 +14,10 @@ Bambu Handy.
 - Printer controls (pause / resume / stop / light / speed) are built in but **off by default**; see
   [Printer controls](#printer-controls).
 
-Reference hardware: Surface Book 1 running Arch Linux (linux-surface kernel) with KDE Plasma 6 on
-Wayland. The backend is plain Python and works anywhere; the kiosk/screen parts (`kiosk.sh`)
-assume KDE Plasma 6.
+Built on a Surface Book 1 running Arch Linux with the [linux-surface](https://github.com/linux-surface/linux-surface)
+kernel and KDE Plasma 6 on Wayland. See [Reference system](#reference-system) for exact versions
+and every setting that was changed. The backend is plain Python and runs on any Linux machine.
+The kiosk/screen parts (`kiosk.sh`) assume KDE Plasma 6.
 
 ## How it works
 
@@ -43,6 +44,57 @@ Everything listens on localhost only.
   network settings screen).
 - Linux, x86-64, with systemd, Python 3.10+, Firefox and `curl`.
 - For the kiosk parts: KDE Plasma 6 (`kwriteconfig6`, `qdbus6`, `kde-inhibit`).
+
+## Reference system
+
+This is the machine the panel was built and tested on. Other hardware should work, but on a
+Surface the touchscreen needs the linux-surface kernel.
+
+| | |
+| --- | --- |
+| Hardware | Surface Book 1 (i5-6300U, 8 GB, HD 520), 3000×2000 screen at 180% scale (the page is ~1667×1112 CSS px) |
+| OS | Arch Linux |
+| Kernel | `linux-surface` 6.19 from the [linux-surface](https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup#arch) pacman repo |
+| Touch | `iptsd` 3.1 (Intel Precise Touch), running as `iptsd@dev-hidraw6.service` |
+| Desktop | KDE Plasma 6.7 on Wayland |
+| Login | Plasma Login Manager (`plasma-login-manager`) with autologin |
+| Browser | Firefox 152 |
+| Python | 3.14 (aiohttp 3.14, paho-mqtt 2.1) |
+| Camera relay | go2rtc 1.9.14 |
+
+### Surface touchscreen (linux-surface)
+
+The stock Arch kernel doesn't drive the Surface Book's touchscreen. Follow the
+[linux-surface Arch instructions](https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup#arch):
+add their pacman repo and signing key, then install `linux-surface`, `linux-surface-headers`
+and `iptsd`, add the kernel to your bootloader, and reboot into it. `uname -r` should end in
+`-surface`. iptsd starts automatically for the touch device. Check it with
+`systemctl list-units 'iptsd*'`.
+
+### Settings changed from stock
+
+`kiosk.sh` applies all of these at login, so you don't need to set them by hand. They're listed
+here so you know what it changes and can undo it.
+
+| File | Setting | Why |
+| --- | --- | --- |
+| `~/.config/powerdevilrc` (`AC`, `Battery`, `LowBattery` profiles) | `Display/TurnOffDisplayWhenIdle=true`, `TurnOffDisplayIdleTimeoutSec=<screen_off_minutes × 60>` | Screen turns off when idle |
+| | `Display/DimDisplayWhenIdle=false` | No dimming step first |
+| | `Display/LockBeforeTurnOffDisplay=false` | No lock screen when it turns off |
+| | `SuspendAndShutdown/AutoSuspendAction=0` | Never suspend |
+| | `SuspendAndShutdown/PowerButtonAction=128` | Power button toggles the screen instead of sleeping (64 = off only, 1 = sleep). PowerDevil owns the power key, so this belongs here, not in `logind.conf`. |
+| `~/.config/kscreenlockerrc` | `Daemon/Autolock=false`, `Daemon/LockOnResume=false` | Never lock, so one tap wakes straight to the panel |
+| `~/.config/kwinrc` | `Wayland/DoubleTapWakeup=false` | A single tap wakes the screen instead of a double tap |
+| Firefox profile (`firefox/user.js`) | No pinch zoom, overscroll or swipe navigation; autoplay allowed; VA-API on; no first-run pages or session restore | Touch kiosk behavior |
+| Launch | `kde-inhibit --power` (without `--screenSaver`) | Blocks sleep but still lets the display turn off |
+
+Also on this machine, but set up by hand:
+
+- Autologin (see step 6). This machine uses Plasma Login Manager, not SDDM.
+- Display scale 180% (System Settings → Display). The layout is designed for about
+  1667×1112 CSS px. Other screen sizes are untested.
+- "Restart tablet" runs `systemctl reboot` as the logged-in user. logind allows that on the
+  active seat without a password, so no sudo rule is needed.
 
 ## Setup
 
